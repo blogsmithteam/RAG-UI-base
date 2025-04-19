@@ -1,0 +1,88 @@
+/* Additional custom styles to complement Bootstrap */
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
+/* Card styling */
+.card {
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 24px;
+}
+
+.card-header {
+    border-radius: 8px 8px 0 0 !important;
+    font-weight: 500;
+}
+
+.card-header i {
+    margin-right: 8px;
+    vertical-align: middle;
+}
+
+/* Answer text styling */
+#answerText {
+    line-height: 1.6;
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+#answerText p:last-child {
+    margin-bottom: 0;
+}
+
+/* Source list styling */
+#sourcesList {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+/* Loading spinner adjustments */
+#loadingIndicator {
+    min-height: 200px;
+}
+
+/* Code block styling */
+pre {
+    margin: 0;
+    overflow-x: auto;
+    background-color: transparent;
+    color: var(--bs-light);
+}
+
+code {
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    white-space: pre;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .card-body {
+        padding: 1rem;
+    }
+}
+
+/* SVG icon adjustments */
+.feather {
+    width: 18px;
+    height: 18px;
+    vertical-align: text-bottom;
+}
+
+.navbar-brand .feather {
+    margin-right: 8px;
+}
+
+/* API Code Examples */
+pre code {
+    display: block;
+    padding: 0;
+    color: #adb5bd;
+}

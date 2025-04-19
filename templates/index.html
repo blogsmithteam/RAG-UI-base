@@ -1,0 +1,105 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card mb-4">
+            <div class="card-header bg-primary bg-opacity-25">
+                <h2 class="mb-0">
+                    <i data-feather="search"></i> RAG Query System
+                </h2>
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">Ask questions about blog content</h5>
+                <p class="card-text">
+                    This API uses Retrieval-Augmented Generation (RAG) to answer questions based on indexed blog content.
+                    The system retrieves relevant information from a Pinecone vector database and uses OpenAI's GPT-4o to generate 
+                    coherent answers with source citations.
+                </p>
+                
+                <form id="queryForm" class="mt-4">
+                    <div class="mb-3">
+                        <label for="queryInput" class="form-label">Your Question:</label>
+                        <textarea class="form-control" id="queryInput" rows="3" 
+                            placeholder="Example: What have we written about AI plagiarism?"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="topkSelector" class="form-label">Number of context chunks to retrieve:</label>
+                        <select class="form-select" id="topkSelector">
+                            <option value="3">3 chunks</option>
+                            <option value="5" selected>5 chunks</option>
+                            <option value="8">8 chunks</option>
+                            <option value="10">10 chunks</option>
+                        </select>
+                        <div class="form-text">More chunks provide broader context but may slow down response time.</div>
+                    </div>
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="submit" class="btn btn-primary">
+                            <i data-feather="send"></i> Submit Query
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Results card, initially hidden -->
+        <div id="resultsCard" class="card d-none">
+            <div class="card-header bg-success bg-opacity-25">
+                <h3 class="mb-0"><i data-feather="file-text"></i> Query Results</h3>
+            </div>
+            <div class="card-body">
+                <div id="loadingIndicator" class="text-center py-5 d-none">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-3">Retrieving and generating answer...</p>
+                </div>
+                
+                <div id="resultsContent">
+                    <h4>Answer</h4>
+                    <div id="answerText" class="p-3 bg-dark bg-opacity-25 rounded mb-4">
+                        <!-- Answer will be inserted here -->
+                    </div>
+                    
+                    <h5>Sources</h5>
+                    <div id="sourcesList" class="list-group">
+                        <!-- Sources will be inserted here -->
+                    </div>
+                </div>
+                
+                <div id="errorDisplay" class="alert alert-danger d-none">
+                    <!-- Error message will be inserted here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- API Usage Instructions -->
+        <div class="card mt-4">
+            <div class="card-header bg-info bg-opacity-25">
+                <h3 class="mb-0"><i data-feather="code"></i> API Usage</h3>
+            </div>
+            <div class="card-body">
+                <h5>Endpoint: POST /query</h5>
+                <p>Send queries programmatically using the REST API:</p>
+                
+                <div class="bg-dark p-3 rounded mb-3">
+                    <pre><code>curl -X POST ${window.location.origin}/query \
+-H "Content-Type: application/json" \
+-d '{"query": "What have we written about AI plagiarism?", "top_k": 5}'</code></pre>
+                </div>
+                
+                <h5>Response Format:</h5>
+                <div class="bg-dark p-3 rounded">
+                    <pre><code>{
+  "answer": "Detailed answer to your question...",
+  "sources": [
+    "https://blog.example.com/post1",
+    "https://blog.example.com/post2"
+  ]
+}</code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
