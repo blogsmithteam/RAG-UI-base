@@ -1,0 +1,129 @@
+🧱 1. Create a Replit Project
+Go to https://replit.com/
+
+Click + Create
+
+Choose Python (with Flask) as the template
+
+Name your project something like rag-query-api
+
+🔑 2. Add Environment Variables (Secrets)
+Click the 🔐 “Secrets” (lock icon in the left sidebar), and add:
+
+
+Key	Value
+OPENAI_API_KEY	Your OpenAI API key
+PINECONE_API_KEY	Your Pinecone API key
+You can optionally add:
+
+PINECONE_INDEX_NAME if you want to keep it configurable
+
+📦 3. Install Required Packages
+In the Replit Shell, run:
+
+bash
+Copy
+Edit
+pip install flask openai pinecone tiktoken
+Then click the “⋮ menu > Show hidden files”, and open replit.nix.
+Add this block if it’s not already there under packages:
+
+nix
+Copy
+Edit
+    packages = with pkgs; [
+      python311
+      python311Packages.flask
+      python311Packages.openai
+      python311Packages.pinecone-client
+    ];
+📄 4. Paste in the Flask App Code
+Open main.py and replace the contents with the full backend code we created earlier here, or use this minimal setup:
+
+python
+Copy
+Edit
+from flask import Flask, request, jsonify
+from openai import OpenAI
+from pinecone import Pinecone
+import os
+
+# Load keys
+openai_api_key = os.environ["OPENAI_API_KEY"]
+pinecone_api_key = os.environ["PINECONE_API_KEY"]
+index_name = "blogsmith-index"
+
+client = OpenAI(api_key=openai_api_key)
+pc = Pinecone(api_key=pinecone_api_key)
+index = pc.Index(index_name)
+
+app = Flask(__name__)
+
+def get_embedding(text):
+    response = client.embeddings.create(input=[text], model="text-embedding-3-small")
+    return response.data[0].embedding
+
+@app.route("/query", methods=["POST"])
+def query():
+    data = request.get_json()
+    query_text = data.get("query", "")
+    if not query_text:
+        return jsonify({"error": "Missing query"}), 400
+
+    try:
+        embedding = get_embedding(query_text)
+        results = index.query(vector=embedding, top_k=5, include_metadata=True)
+
+        context_chunks = []
+        sources = set()
+        for match in results["matches"]:
+            text = match["metadata"].get("text", "")
+            url = match["metadata"].get("url", "")
+            if text:
+                context_chunks.append(f"{text}\n\nSource: {url}")
+                if url:
+                    sources.add(url)
+
+        context = "\n\n---\n\n".join(context_chunks)
+
+        prompt = f"""You are a helpful assistant answering questions based on blog content.
+
+Answer the following question using ONLY the information below. Cite the sources when relevant. If the answer isn’t available, say you don’t know.
+
+QUESTION:
+{query_text}
+
+CONTEXT:
+{context}
+
+ANSWER:"""
+
+        completion = client.chat.completions.create(
+            model="gpt-4",
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.2
+        )
+
+        answer = completion.choices[0].message.content.strip()
+        return jsonify({"answer": answer, "sources": list(sources)})
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
+🚀 5. Run the App
+Click Run
+
+You’ll get a public URL like:
+https://rag-query-api.username.repl.co/query
+
+🔁 6. Test It With curl or Postman
+You can send a POST request like:
+
+bash
+Copy
+Edit
+curl -X POST https://rag-query-api.username.repl.co/query \
+-H "Content-Type: application/json" \
+-d '{"query": "What have we written about AI plagiarism?"}'
