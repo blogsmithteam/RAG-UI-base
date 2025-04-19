@@ -160,11 +160,15 @@ def retrieve_and_generate_answer(query_text, top_k=5, custom_api_key=None):
     Args:
         query_text (str): The query text
         top_k (int): Number of top results to retrieve
-        custom_api_key (str, optional): Custom OpenAI API key to use instead of the default
+        custom_api_key (str, required): The user's OpenAI API key
         
     Returns:
         tuple: (answer, set of source URLs)
     """
+    # Validate API key is provided
+    if not custom_api_key:
+        raise ValueError("OpenAI API key is required")
+        
     # Retrieve relevant context
     context_chunks, sources = retrieve_context(query_text, top_k)
     

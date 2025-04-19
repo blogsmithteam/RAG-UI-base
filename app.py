@@ -27,12 +27,14 @@ def query():
         query_text = data.get("query", "")
         if not query_text:
             return jsonify({"error": "Missing query parameter"}), 400
+        
+        # Get custom API key (required)
+        custom_api_key = data.get("api_key")
+        if not custom_api_key:
+            return jsonify({"error": "Missing OpenAI API key. Please provide your own API key"}), 400
             
         # Get the top_k parameter (default to 5 if not provided)
         top_k = data.get("top_k", 5)
-        
-        # Get custom API key if provided
-        custom_api_key = data.get("api_key")
         
         # Process the query through the RAG system
         answer, sources = retrieve_and_generate_answer(query_text, top_k, custom_api_key)

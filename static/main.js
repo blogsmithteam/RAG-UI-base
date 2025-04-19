@@ -42,8 +42,14 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        // Get the API key (if provided)
+        // Get the API key (required)
         const apiKey = apiKeyInput ? apiKeyInput.value.trim() : '';
+        
+        // Validate API key
+        if (!apiKey) {
+            showError('Please enter your OpenAI API key.');
+            return;
+        }
         
         // Get number of chunks to retrieve
         const topK = parseInt(topkSelector.value, 10);
@@ -54,13 +60,9 @@ document.addEventListener('DOMContentLoaded', function() {
         // Prepare request data
         const requestData = {
             query: queryText,
-            top_k: topK
+            top_k: topK,
+            api_key: apiKey
         };
-        
-        // Add API key if provided
-        if (apiKey) {
-            requestData.api_key = apiKey;
-        }
         
         // Make API request
         fetch('/query', {

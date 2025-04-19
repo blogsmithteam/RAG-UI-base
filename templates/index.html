@@ -25,15 +25,15 @@
                     </div>
                     
                     <div class="mb-3">
-                        <label for="apiKeyInput" class="form-label">OpenAI API Key (Optional):</label>
+                        <label for="apiKeyInput" class="form-label">OpenAI API Key (Required):</label>
                         <div class="input-group">
-                            <input type="password" class="form-control" id="apiKeyInput" 
-                                placeholder="Your OpenAI API Key (defaults to system key if empty)">
+                            <input type="password" class="form-control" id="apiKeyInput" required
+                                placeholder="Your OpenAI API Key">
                             <button class="btn btn-outline-secondary" type="button" id="toggleApiKey">
                                 <i data-feather="eye"></i>
                             </button>
                         </div>
-                        <div class="form-text">Provide your own OpenAI API key to use for this query. Will be used instead of the system key.</div>
+                        <div class="form-text">You must provide your own OpenAI API key to use this service. Your key will only be used for this query and is not stored on our servers.</div>
                     </div>
                     
                     <div class="mb-3">
@@ -105,8 +105,8 @@
                 <h5>Parameters:</h5>
                 <ul class="list-group mb-3">
                     <li class="list-group-item"><strong>query</strong> (required) - Your question text</li>
+                    <li class="list-group-item"><strong>api_key</strong> (required) - Your OpenAI API key</li>
                     <li class="list-group-item"><strong>top_k</strong> (optional, default: 5) - Number of context chunks to retrieve</li>
-                    <li class="list-group-item"><strong>api_key</strong> (optional) - Your OpenAI API key</li>
                 </ul>
                 
                 <h5>Response Format:</h5>
