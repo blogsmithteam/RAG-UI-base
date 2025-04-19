@@ -2,6 +2,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Get form elements
     const queryForm = document.getElementById('queryForm');
     const queryInput = document.getElementById('queryInput');
+    const apiKeyInput = document.getElementById('apiKeyInput');
+    const toggleApiKey = document.getElementById('toggleApiKey');
     const topkSelector = document.getElementById('topkSelector');
     
     // Get results elements
@@ -11,6 +13,21 @@ document.addEventListener('DOMContentLoaded', function() {
     const answerText = document.getElementById('answerText');
     const sourcesList = document.getElementById('sourcesList');
     const errorDisplay = document.getElementById('errorDisplay');
+    
+    // Toggle API key visibility
+    if (toggleApiKey) {
+        toggleApiKey.addEventListener('click', function() {
+            const type = apiKeyInput.getAttribute('type');
+            if (type === 'password') {
+                apiKeyInput.setAttribute('type', 'text');
+                toggleApiKey.innerHTML = '<i data-feather="eye-off"></i>';
+            } else {
+                apiKeyInput.setAttribute('type', 'password');
+                toggleApiKey.innerHTML = '<i data-feather="eye"></i>';
+            }
+            feather.replace();
+        });
+    }
     
     // Add event listener to form submission
     queryForm.addEventListener('submit', function(e) {
@@ -25,11 +42,25 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
+        // Get the API key (if provided)
+        const apiKey = apiKeyInput ? apiKeyInput.value.trim() : '';
+        
         // Get number of chunks to retrieve
         const topK = parseInt(topkSelector.value, 10);
         
         // Show loading state
         showLoading(true);
+        
+        // Prepare request data
+        const requestData = {
+            query: queryText,
+            top_k: topK
+        };
+        
+        // Add API key if provided
+        if (apiKey) {
+            requestData.api_key = apiKey;
+        }
         
         // Make API request
         fetch('/query', {
@@ -37,10 +68,7 @@ document.addEventListener('DOMContentLoaded', function() {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-                query: queryText,
-                top_k: topK
-            }),
+            body: JSON.stringify(requestData),
         })
         .then(response => {
             if (!response.ok) {

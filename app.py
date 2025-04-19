@@ -31,8 +31,11 @@ def query():
         # Get the top_k parameter (default to 5 if not provided)
         top_k = data.get("top_k", 5)
         
+        # Get custom API key if provided
+        custom_api_key = data.get("api_key")
+        
         # Process the query through the RAG system
-        answer, sources = retrieve_and_generate_answer(query_text, top_k)
+        answer, sources = retrieve_and_generate_answer(query_text, top_k, custom_api_key)
         
         # Return the answer and sources
         return jsonify({

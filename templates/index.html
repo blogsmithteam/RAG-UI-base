@@ -23,6 +23,19 @@
                         <textarea class="form-control" id="queryInput" rows="3" 
                             placeholder="Example: What have we written about AI plagiarism?"></textarea>
                     </div>
+                    
+                    <div class="mb-3">
+                        <label for="apiKeyInput" class="form-label">OpenAI API Key (Optional):</label>
+                        <div class="input-group">
+                            <input type="password" class="form-control" id="apiKeyInput" 
+                                placeholder="Your OpenAI API Key (defaults to system key if empty)">
+                            <button class="btn btn-outline-secondary" type="button" id="toggleApiKey">
+                                <i data-feather="eye"></i>
+                            </button>
+                        </div>
+                        <div class="form-text">Provide your own OpenAI API key to use for this query. Will be used instead of the system key.</div>
+                    </div>
+                    
                     <div class="mb-3">
                         <label for="topkSelector" class="form-label">Number of context chunks to retrieve:</label>
                         <select class="form-select" id="topkSelector">
@@ -33,6 +46,7 @@
                         </select>
                         <div class="form-text">More chunks provide broader context but may slow down response time.</div>
                     </div>
+                    
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                         <button type="submit" class="btn btn-primary">
                             <i data-feather="send"></i> Submit Query
@@ -85,8 +99,15 @@
                 <div class="bg-dark p-3 rounded mb-3">
                     <pre><code>curl -X POST ${window.location.origin}/query \
 -H "Content-Type: application/json" \
--d '{"query": "What have we written about AI plagiarism?", "top_k": 5}'</code></pre>
+-d '{"query": "What have we written about AI plagiarism?", "top_k": 5, "api_key": "your_openai_api_key"}'</code></pre>
                 </div>
+                
+                <h5>Parameters:</h5>
+                <ul class="list-group mb-3">
+                    <li class="list-group-item"><strong>query</strong> (required) - Your question text</li>
+                    <li class="list-group-item"><strong>top_k</strong> (optional, default: 5) - Number of context chunks to retrieve</li>
+                    <li class="list-group-item"><strong>api_key</strong> (optional) - Your OpenAI API key</li>
+                </ul>
                 
                 <h5>Response Format:</h5>
                 <div class="bg-dark p-3 rounded">

@@ -99,13 +99,14 @@ def retrieve_context(query_text, top_k=5):
         logger.exception("Error retrieving context")
         raise Exception(f"Failed to retrieve context: {str(e)}")
 
-def generate_answer(query_text, context_chunks):
+def generate_answer(query_text, context_chunks, custom_api_key=None):
     """
     Generate an answer using OpenAI based on the query and retrieved context.
     
     Args:
         query_text (str): The query text
         context_chunks (list): List of relevant context chunks
+        custom_api_key (str, optional): Custom OpenAI API key to use instead of the default
         
     Returns:
         str: The generated answer
@@ -127,11 +128,17 @@ CONTEXT:
 
 ANSWER:"""
 
+        # Create a temporary client with the custom API key if provided
+        client = openai_client
+        if custom_api_key:
+            logger.debug("Using custom OpenAI API key")
+            client = OpenAI(api_key=custom_api_key)
+        
         # Generate completion
         logger.debug("Generating answer with OpenAI")
         # the newest OpenAI model is "gpt-4o" which was released May 13, 2024.
         # do not change this unless explicitly requested by the user
-        completion = openai_client.chat.completions.create(
+        completion = client.chat.completions.create(
             model="gpt-4o",
             messages=[{"role": "user", "content": prompt}],
             temperature=0.2
@@ -146,13 +153,14 @@ ANSWER:"""
         logger.exception("Error generating answer")
         raise Exception(f"Failed to generate answer: {str(e)}")
 
-def retrieve_and_generate_answer(query_text, top_k=5):
+def retrieve_and_generate_answer(query_text, top_k=5, custom_api_key=None):
     """
     Main function that combines retrieval and generation for RAG.
     
     Args:
         query_text (str): The query text
         top_k (int): Number of top results to retrieve
+        custom_api_key (str, optional): Custom OpenAI API key to use instead of the default
         
     Returns:
         tuple: (answer, set of source URLs)
@@ -165,6 +173,6 @@ def retrieve_and_generate_answer(query_text, top_k=5):
         return "I don't have enough information to answer this question based on the available content.", []
     
     # Generate an answer based on the retrieved context
-    answer = generate_answer(query_text, context_chunks)
+    answer = generate_answer(query_text, context_chunks, custom_api_key)
     
     return answer, sources
