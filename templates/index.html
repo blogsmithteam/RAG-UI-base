@@ -47,6 +47,20 @@
                         <div class="form-text">More chunks provide broader context but may slow down response time.</div>
                     </div>
                     
+                    <div class="mb-3">
+                        <label for="promptTemplate" class="form-label">Prompt Template:</label>
+                        <div class="d-flex justify-content-end mb-1">
+                            <button type="button" class="btn btn-sm btn-outline-secondary" id="resetPromptBtn">
+                                <i data-feather="refresh-cw"></i> Reset to Default
+                            </button>
+                        </div>
+                        <textarea class="form-control" id="promptTemplate" rows="10"></textarea>
+                        <div class="form-text">
+                            Customize the prompt sent to the AI. Use <code>{query_text}</code> and <code>{context}</code> as placeholders.
+                            <br>The default prompt will be restored when the page is refreshed.
+                        </div>
+                    </div>
+                    
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                         <button type="submit" class="btn btn-primary">
                             <i data-feather="send"></i> Submit Query
@@ -107,6 +121,7 @@
                     <li class="list-group-item"><strong>query</strong> (required) - Your question text</li>
                     <li class="list-group-item"><strong>api_key</strong> (required) - Your OpenAI API key</li>
                     <li class="list-group-item"><strong>top_k</strong> (optional, default: 5) - Number of context chunks to retrieve</li>
+                    <li class="list-group-item"><strong>prompt_template</strong> (optional) - Custom prompt template with {query_text} and {context} placeholders</li>
                 </ul>
                 
                 <h5>Response Format:</h5>

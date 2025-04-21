@@ -36,8 +36,11 @@ def query():
         # Get the top_k parameter (default to 5 if not provided)
         top_k = data.get("top_k", 5)
         
+        # Get custom prompt (optional)
+        custom_prompt = data.get("prompt_template")
+        
         # Process the query through the RAG system
-        answer, sources = retrieve_and_generate_answer(query_text, top_k, custom_api_key)
+        answer, sources = retrieve_and_generate_answer(query_text, top_k, custom_api_key, custom_prompt)
         
         # Return the answer and sources
         return jsonify({

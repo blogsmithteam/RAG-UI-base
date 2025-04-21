@@ -5,6 +5,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const apiKeyInput = document.getElementById('apiKeyInput');
     const toggleApiKey = document.getElementById('toggleApiKey');
     const topkSelector = document.getElementById('topkSelector');
+    const promptTemplate = document.getElementById('promptTemplate');
+    const resetPromptBtn = document.getElementById('resetPromptBtn');
     
     // Get results elements
     const resultsCard = document.getElementById('resultsCard');
@@ -13,6 +15,32 @@ document.addEventListener('DOMContentLoaded', function() {
     const answerText = document.getElementById('answerText');
     const sourcesList = document.getElementById('sourcesList');
     const errorDisplay = document.getElementById('errorDisplay');
+    
+    // Default prompt template
+    const DEFAULT_PROMPT_TEMPLATE = `You are a helpful assistant answering questions based on blog content.
+
+Answer the following question using ONLY the information below. Cite the sources when relevant. If the answer isn't available, say you don't know.
+
+QUESTION:
+{query_text}
+
+CONTEXT:
+{context}
+
+ANSWER:`;
+    
+    // Set initial prompt template and add reset button functionality
+    if (promptTemplate) {
+        // Set the default prompt
+        promptTemplate.value = DEFAULT_PROMPT_TEMPLATE;
+        
+        // Add reset button functionality
+        if (resetPromptBtn) {
+            resetPromptBtn.addEventListener('click', function() {
+                promptTemplate.value = DEFAULT_PROMPT_TEMPLATE;
+            });
+        }
+    }
     
     // Toggle API key visibility
     if (toggleApiKey) {
@@ -63,6 +91,12 @@ document.addEventListener('DOMContentLoaded', function() {
             top_k: topK,
             api_key: apiKey
         };
+        
+        // Add custom prompt template if it's different from the default
+        const customPrompt = promptTemplate.value.trim();
+        if (customPrompt && customPrompt !== DEFAULT_PROMPT_TEMPLATE) {
+            requestData.prompt_template = customPrompt;
+        }
         
         // Make API request
         fetch('/query', {

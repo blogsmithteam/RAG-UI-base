@@ -99,24 +99,8 @@ def retrieve_context(query_text, top_k=5):
         logger.exception("Error retrieving context")
         raise Exception(f"Failed to retrieve context: {str(e)}")
 
-def generate_answer(query_text, context_chunks, custom_api_key=None):
-    """
-    Generate an answer using OpenAI based on the query and retrieved context.
-    
-    Args:
-        query_text (str): The query text
-        context_chunks (list): List of relevant context chunks
-        custom_api_key (str, optional): Custom OpenAI API key to use instead of the default
-        
-    Returns:
-        str: The generated answer
-    """
-    try:
-        # Join context chunks with separators
-        context = "\n\n---\n\n".join(context_chunks)
-        
-        # Construct the prompt
-        prompt = f"""You are a helpful assistant answering questions based on blog content.
+# Define default prompt template
+DEFAULT_PROMPT_TEMPLATE = """You are a helpful assistant answering questions based on blog content.
 
 Answer the following question using ONLY the information below. Cite the sources when relevant. If the answer isn't available, say you don't know.
 
@@ -127,6 +111,29 @@ CONTEXT:
 {context}
 
 ANSWER:"""
+
+def generate_answer(query_text, context_chunks, custom_api_key=None, custom_prompt=None):
+    """
+    Generate an answer using OpenAI based on the query and retrieved context.
+    
+    Args:
+        query_text (str): The query text
+        context_chunks (list): List of relevant context chunks
+        custom_api_key (str, optional): Custom OpenAI API key to use instead of the default
+        custom_prompt (str, optional): Custom prompt template
+        
+    Returns:
+        str: The generated answer
+    """
+    try:
+        # Join context chunks with separators
+        context = "\n\n---\n\n".join(context_chunks)
+        
+        # Use custom prompt if provided, otherwise use default
+        prompt_template = custom_prompt if custom_prompt else DEFAULT_PROMPT_TEMPLATE
+        
+        # Format the prompt with query and context
+        prompt = prompt_template.format(query_text=query_text, context=context)
 
         # Create a temporary client with the custom API key if provided
         client = openai_client
@@ -153,7 +160,7 @@ ANSWER:"""
         logger.exception("Error generating answer")
         raise Exception(f"Failed to generate answer: {str(e)}")
 
-def retrieve_and_generate_answer(query_text, top_k=5, custom_api_key=None):
+def retrieve_and_generate_answer(query_text, top_k=5, custom_api_key=None, custom_prompt=None):
     """
     Main function that combines retrieval and generation for RAG.
     
@@ -161,6 +168,7 @@ def retrieve_and_generate_answer(query_text, top_k=5, custom_api_key=None):
         query_text (str): The query text
         top_k (int): Number of top results to retrieve
         custom_api_key (str, required): The user's OpenAI API key
+        custom_prompt (str, optional): Custom prompt template
         
     Returns:
         tuple: (answer, set of source URLs)
@@ -177,6 +185,6 @@ def retrieve_and_generate_answer(query_text, top_k=5, custom_api_key=None):
         return "I don't have enough information to answer this question based on the available content.", []
     
     # Generate an answer based on the retrieved context
-    answer = generate_answer(query_text, context_chunks, custom_api_key)
+    answer = generate_answer(query_text, context_chunks, custom_api_key, custom_prompt)
     
     return answer, sources
